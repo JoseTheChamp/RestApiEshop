@@ -1,3 +1,6 @@
 <Solution>
   <Project Path="RestApiEshop/RestApiEshop.csproj" />
+  <Project Path="RestApiEshop.Application/RestApiEshop.Application.csproj" />
+  <Project Path="RestApiEshop.Domain/RestApiEshop.Domain.csproj" />
+  <Project Path="RestApiEshop.Infrastructure/RestApiEshop.Infrastructure.csproj" />
 </Solution>
