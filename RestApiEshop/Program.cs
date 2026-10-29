@@ -1,14 +1,24 @@
-var builder = WebApplication.CreateBuilder(args);
+using RestApiEshop.Application;
+using RestApiEshop.Infrastructure;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
+builder.Services.AddApplication();
+builder.Services.AddInfrastructure();
+
 builder.Services.AddControllers();
+builder.Services.AddProblemDetails();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
 if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi();
