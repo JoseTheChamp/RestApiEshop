@@ -6,6 +6,7 @@ namespace RestApiEshop.Infrastructure.Mock
 	public class MockProductRepository : IProductRepository
 	{
 		private readonly List<Product> _products;
+		private readonly Lock _lock = new();
 
 		public MockProductRepository(IEnumerable<Product> products)
 		{
@@ -14,12 +15,34 @@ namespace RestApiEshop.Infrastructure.Mock
 
 		public Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
-			return Task.FromResult<IReadOnlyList<Product>>(_products.ToList());
+			lock (_lock)
+			{
+				return Task.FromResult<IReadOnlyList<Product>>(_products.ToList());
+			}
 		}
 
 		public Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
 		{
-			return Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
+			lock (_lock)
+			{
+				return Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
+			}
+		}
+
+		public Task UpdateAsync(Product product, CancellationToken cancellationToken = default)
+		{
+			lock (_lock)
+			{
+				int index = _products.FindIndex(p => p.Id == product.Id);
+				if (index == -1)
+				{
+					throw new InvalidOperationException($"Product with id {product.Id} does not exist.");
+				}
+
+				_products[index] = product;
+			}
+
+			return Task.CompletedTask;
 		}
 	}
 }

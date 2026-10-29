@@ -7,5 +7,7 @@ namespace RestApiEshop.Application.Products
 		Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken = default);
 
 		Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default);
+
+		Task UpdateAsync(Product product, CancellationToken cancellationToken = default);
 	}
 }

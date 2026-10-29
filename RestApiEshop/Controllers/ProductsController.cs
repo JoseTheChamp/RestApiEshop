@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using RestApiEshop.Application.Products;
+using RestApiEshop.Models;
 
 namespace RestApiEshop.Controllers
 {
@@ -26,6 +27,18 @@ namespace RestApiEshop.Controllers
 		public async Task<ActionResult<ProductDto>> GetProduct(int id, CancellationToken cancellationToken)
 		{
 			ProductDto? product = await _productService.GetByIdAsync(id, cancellationToken);
+			if (product is null)
+			{
+				return NotFound();
+			}
+
+			return Ok(product);
+		}
+
+		[HttpPatch("{id:int}")]
+		public async Task<ActionResult<ProductDto>> UpdateProductDescription(int id, UpdateProductDescriptionRequest request, CancellationToken cancellationToken)
+		{
+			ProductDto? product = await _productService.UpdateDescriptionAsync(id, request.Description, cancellationToken);
 			if (product is null)
 			{
 				return NotFound();
