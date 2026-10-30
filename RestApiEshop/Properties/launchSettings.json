@@ -21,7 +21,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     },
-    "https (mock data)": {
+    "https-mock": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
