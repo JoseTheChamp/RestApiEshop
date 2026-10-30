@@ -25,7 +25,27 @@ builder.Services.AddApiVersioning(options =>
 		options.GroupNameFormat = "'v'VVV";
 		options.SubstituteApiVersionInUrl = true;
 	})
-	.AddOpenApi();
+	.AddOpenApi(options =>
+	{
+		options.Document.AddDocumentTransformer((document, context, cancellationToken) =>
+		{
+			document.Info.Title = "RestApiEshop API";
+			document.Info.Description = "Product catalog of the eshop - list of products, product detail and update of the product description.";
+
+			return Task.CompletedTask;
+		});
+
+		// decimal is described as a double by default
+		options.Document.AddSchemaTransformer((schema, context, cancellationToken) =>
+		{
+			if (context.JsonTypeInfo.Type == typeof(decimal))
+			{
+				schema.Format = "decimal";
+			}
+
+			return Task.CompletedTask;
+		});
+	});
 
 WebApplication app = builder.Build();
 
