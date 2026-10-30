@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using RestApiEshop.Application;
 using RestApiEshop.Infrastructure;
 
@@ -10,8 +11,20 @@ builder.Services.AddInfrastructure(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddProblemDetails();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+
+builder.Services.AddApiVersioning(options =>
+	{
+		options.DefaultApiVersion = new ApiVersion(1, 0);
+		options.ReportApiVersions = true;
+		options.ApiVersionReader = new UrlSegmentApiVersionReader();
+	})
+	.AddMvc()
+	.AddApiExplorer(options =>
+	{
+		options.GroupNameFormat = "'v'VVV";
+		options.SubstituteApiVersionInUrl = true;
+	})
+	.AddOpenApi();
 
 WebApplication app = builder.Build();
 
@@ -21,7 +34,7 @@ app.UseStatusCodePages();
 
 if (app.Environment.IsDevelopment())
 {
-	app.MapOpenApi();
+	app.MapOpenApi().WithDocumentPerVersion();
 
 	await app.Services.ApplyMigrationsAsync();
 }

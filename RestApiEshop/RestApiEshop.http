@@ -1,16 +1,16 @@
 @RestApiEshop_HostAddress = http://localhost:5288
 
-GET {{RestApiEshop_HostAddress}}/api/products
+GET {{RestApiEshop_HostAddress}}/api/v1/products
 Accept: application/json
 
 ###
 
-GET {{RestApiEshop_HostAddress}}/api/products/1
+GET {{RestApiEshop_HostAddress}}/api/v1/products/1
 Accept: application/json
 
 ###
 
-PATCH {{RestApiEshop_HostAddress}}/api/products/1
+PATCH {{RestApiEshop_HostAddress}}/api/v1/products/1
 Content-Type: application/json
 
 {

@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Microsoft.AspNetCore.Mvc;
 using RestApiEshop.Application.Products;
 using RestApiEshop.Models;
@@ -5,7 +6,8 @@ using RestApiEshop.Models;
 namespace RestApiEshop.Controllers
 {
 	[ApiController]
-	[Route("api/products")]
+	[ApiVersion("1.0")]
+	[Route("api/v{version:apiVersion}/products")]
 	public class ProductsController : ControllerBase
 	{
 		private readonly IProductService _productService;
