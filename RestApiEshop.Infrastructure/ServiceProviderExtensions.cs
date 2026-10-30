@@ -10,8 +10,11 @@ namespace RestApiEshop.Infrastructure
 		{
 			using IServiceScope scope = serviceProvider.CreateScope();
 
-			EshopDbContext context = scope.ServiceProvider.GetRequiredService<EshopDbContext>();
-			await context.Database.MigrateAsync(cancellationToken);
+			EshopDbContext? context = scope.ServiceProvider.GetService<EshopDbContext>();
+			if (context is not null)
+			{
+				await context.Database.MigrateAsync(cancellationToken);
+			}
 		}
 	}
 }
