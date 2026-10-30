@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging;
+using RestApiEshop.Application.Common;
 using RestApiEshop.Domain.Entities;
 
 namespace RestApiEshop.Application.Products
@@ -19,6 +20,23 @@ namespace RestApiEshop.Application.Products
 			IReadOnlyList<Product> products = await _productRepository.GetAllAsync(cancellationToken);
 
 			return products.Select(p => p.ToDto()).ToList();
+		}
+
+		public async Task<PagedResult<ProductDto>> GetPagedAsync(int pageNumber, int pageSize, CancellationToken cancellationToken = default)
+		{
+			ArgumentOutOfRangeException.ThrowIfLessThan(pageNumber, 1);
+			ArgumentOutOfRangeException.ThrowIfLessThan(pageSize, 1);
+
+			int totalCount = await _productRepository.CountAsync(cancellationToken);
+
+			if ((long)(pageNumber - 1) * pageSize >= totalCount)
+			{
+				return new PagedResult<ProductDto>([], pageNumber, pageSize, totalCount);
+			}
+
+			IReadOnlyList<Product> products = await _productRepository.GetPageAsync((pageNumber - 1) * pageSize, pageSize, cancellationToken);
+
+			return new PagedResult<ProductDto>(products.Select(p => p.ToDto()).ToList(), pageNumber, pageSize, totalCount);
 		}
 
 		public async Task<ProductDto?> GetByIdAsync(int id, CancellationToken cancellationToken = default)

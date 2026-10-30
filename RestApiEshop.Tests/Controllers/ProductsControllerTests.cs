@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using RestApiEshop.Application.Common;
 using RestApiEshop.Application.Products;
 using RestApiEshop.Controllers;
 using RestApiEshop.Infrastructure.Mock;
@@ -27,6 +28,17 @@ namespace RestApiEshop.Tests.Controllers
 			OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
 			IReadOnlyList<ProductDto> products = Assert.IsAssignableFrom<IReadOnlyList<ProductDto>>(okResult.Value);
 			Assert.Equal(12, products.Count);
+		}
+
+		[Fact]
+		public async Task GetProductsPaged_ReturnsOkWithRequestedPage()
+		{
+			ActionResult<PagedResult<ProductDto>> result = await _controller.GetProductsPaged(pageNumber: 2, pageSize: 10, CancellationToken.None);
+
+			OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
+			PagedResult<ProductDto> page = Assert.IsType<PagedResult<ProductDto>>(okResult.Value);
+			Assert.Equal(2, page.PageNumber);
+			Assert.Equal(new[] { 11, 12 }, page.Items.Select(p => p.Id));
 		}
 
 		[Fact]

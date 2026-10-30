@@ -1,4 +1,5 @@
 using Microsoft.Extensions.Logging.Abstractions;
+using RestApiEshop.Application.Common;
 using RestApiEshop.Application.Products;
 using RestApiEshop.Domain.Entities;
 using RestApiEshop.Infrastructure.Mock;
@@ -22,6 +23,57 @@ namespace RestApiEshop.Tests.Services
 			IReadOnlyList<ProductDto> products = await _service.GetAllAsync();
 
 			Assert.Equal(Enumerable.Range(1, 12), products.Select(p => p.Id));
+		}
+
+		[Fact]
+		public async Task GetPagedAsync_ReturnsRequestedPage()
+		{
+			PagedResult<ProductDto> page = await _service.GetPagedAsync(pageNumber: 2, pageSize: 5);
+
+			Assert.Equal(new[] { 6, 7, 8, 9, 10 }, page.Items.Select(p => p.Id));
+			Assert.Equal(2, page.PageNumber);
+			Assert.Equal(5, page.PageSize);
+			Assert.Equal(12, page.TotalCount);
+			Assert.Equal(3, page.TotalPages);
+		}
+
+		[Fact]
+		public async Task GetPagedAsync_LastPage_ReturnsRemainingProducts()
+		{
+			PagedResult<ProductDto> page = await _service.GetPagedAsync(pageNumber: 2, pageSize: 10);
+
+			Assert.Equal(new[] { 11, 12 }, page.Items.Select(p => p.Id));
+			Assert.Equal(2, page.TotalPages);
+		}
+
+		[Fact]
+		public async Task GetPagedAsync_PageAfterLastPage_ReturnsNoProducts()
+		{
+			PagedResult<ProductDto> page = await _service.GetPagedAsync(pageNumber: 5, pageSize: 10);
+
+			Assert.Empty(page.Items);
+			Assert.Equal(12, page.TotalCount);
+		}
+
+		[Fact]
+		public async Task GetPagedAsync_NoProducts_ReturnsEmptyPage()
+		{
+			ProductService service = new(new MockProductRepository([]), NullLogger<ProductService>.Instance);
+
+			PagedResult<ProductDto> page = await service.GetPagedAsync(pageNumber: 1, pageSize: 10);
+
+			Assert.Empty(page.Items);
+			Assert.Equal(0, page.TotalCount);
+			Assert.Equal(0, page.TotalPages);
+		}
+
+		[Theory]
+		[InlineData(0, 10)]
+		[InlineData(1, 0)]
+		[InlineData(-1, -1)]
+		public async Task GetPagedAsync_InvalidPaging_Throws(int pageNumber, int pageSize)
+		{
+			await Assert.ThrowsAsync<ArgumentOutOfRangeException>(() => _service.GetPagedAsync(pageNumber, pageSize));
 		}
 
 		[Fact]

@@ -22,6 +22,21 @@ namespace RestApiEshop.Infrastructure.Repositories
 				.ToListAsync(cancellationToken);
 		}
 
+		public async Task<IReadOnlyList<Product>> GetPageAsync(int skip, int take, CancellationToken cancellationToken = default)
+		{
+			return await _context.Products
+				.AsNoTracking()
+				.OrderBy(p => p.Id)
+				.Skip(skip)
+				.Take(take)
+				.ToListAsync(cancellationToken);
+		}
+
+		public Task<int> CountAsync(CancellationToken cancellationToken = default)
+		{
+			return _context.Products.CountAsync(cancellationToken);
+		}
+
 		public async Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
 		{
 			return await _context.Products.FindAsync([id], cancellationToken);

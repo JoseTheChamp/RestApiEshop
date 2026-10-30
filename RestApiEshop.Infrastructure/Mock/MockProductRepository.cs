@@ -21,6 +21,22 @@ namespace RestApiEshop.Infrastructure.Mock
 			}
 		}
 
+		public Task<IReadOnlyList<Product>> GetPageAsync(int skip, int take, CancellationToken cancellationToken = default)
+		{
+			lock (_lock)
+			{
+				return Task.FromResult<IReadOnlyList<Product>>(_products.Skip(skip).Take(take).Select(Copy).ToList());
+			}
+		}
+
+		public Task<int> CountAsync(CancellationToken cancellationToken = default)
+		{
+			lock (_lock)
+			{
+				return Task.FromResult(_products.Count);
+			}
+		}
+
 		public Task<Product?> GetByIdAsync(int id, CancellationToken cancellationToken = default)
 		{
 			lock (_lock)
