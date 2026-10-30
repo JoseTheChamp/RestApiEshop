@@ -10,14 +10,14 @@ namespace RestApiEshop.Infrastructure.Mock
 
 		public MockProductRepository(IEnumerable<Product> products)
 		{
-			_products = products.OrderBy(p => p.Id).ToList();
+			_products = products.OrderBy(p => p.Id).Select(Copy).ToList();
 		}
 
 		public Task<IReadOnlyList<Product>> GetAllAsync(CancellationToken cancellationToken = default)
 		{
 			lock (_lock)
 			{
-				return Task.FromResult<IReadOnlyList<Product>>(_products.ToList());
+				return Task.FromResult<IReadOnlyList<Product>>(_products.Select(Copy).ToList());
 			}
 		}
 
@@ -25,7 +25,9 @@ namespace RestApiEshop.Infrastructure.Mock
 		{
 			lock (_lock)
 			{
-				return Task.FromResult(_products.FirstOrDefault(p => p.Id == id));
+				Product? product = _products.FirstOrDefault(p => p.Id == id);
+
+				return Task.FromResult(product is null ? null : Copy(product));
 			}
 		}
 
@@ -39,10 +41,23 @@ namespace RestApiEshop.Infrastructure.Mock
 					throw new InvalidOperationException($"Product with id {product.Id} does not exist.");
 				}
 
-				_products[index] = product;
+				_products[index] = Copy(product);
 			}
 
 			return Task.CompletedTask;
+		}
+
+		// Callers always work with copies, so a change is stored only when UpdateAsync is called - same as with the database
+		private static Product Copy(Product product)
+		{
+			return new Product
+			{
+				Id = product.Id,
+				Name = product.Name,
+				ImgUri = product.ImgUri,
+				Price = product.Price,
+				Description = product.Description
+			};
 		}
 	}
 }

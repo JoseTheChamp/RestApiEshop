@@ -3,4 +3,5 @@
   <Project Path="RestApiEshop.Application/RestApiEshop.Application.csproj" />
   <Project Path="RestApiEshop.Domain/RestApiEshop.Domain.csproj" />
   <Project Path="RestApiEshop.Infrastructure/RestApiEshop.Infrastructure.csproj" />
+  <Project Path="RestApiEshop.Tests/RestApiEshop.Tests.csproj" />
 </Solution>
