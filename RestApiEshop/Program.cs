@@ -1,4 +1,5 @@
 using Asp.Versioning;
+using Asp.Versioning.ApiExplorer;
 using RestApiEshop.Application;
 using RestApiEshop.Infrastructure;
 
@@ -35,6 +36,13 @@ app.UseStatusCodePages();
 if (app.Environment.IsDevelopment())
 {
 	app.MapOpenApi().WithDocumentPerVersion();
+	app.UseSwaggerUI(options =>
+	{
+		foreach (ApiVersionDescription description in app.DescribeApiVersions())
+		{
+			options.SwaggerEndpoint($"/openapi/{description.GroupName}.json", description.GroupName);
+		}
+	});
 
 	await app.Services.ApplyMigrationsAsync();
 }
